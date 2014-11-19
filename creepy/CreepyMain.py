@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
         self.projectsList = []
         self.currentProject = None
         self.ui.webPage = QWebPage()
-        self.ui.webPage.mainFrame().setUrl(QUrl(os.path.join(os.getcwd(), 'include', 'map.html')))
+        self.ui.webPage.mainFrame().setUrl(QUrl(os.path.join(GeneralUtilities.getIncludeDir(), 'map.html')))
         self.ui.mapWebView.setPage(self.ui.webPage)
         self.ui.menuView.addAction(self.ui.dockWProjects.toggleViewAction())
         self.ui.menuView.addAction(self.ui.dockWLocationsList.toggleViewAction())
@@ -165,7 +165,7 @@ class MainWindow(QMainWindow):
         filterLocationsPointDialog.ui.mapPage = QWebPage()
         myPyObj = filterLocationsPointDialog.pyObj()
         filterLocationsPointDialog.ui.mapPage.mainFrame().addToJavaScriptWindowObject('myPyObj', myPyObj)  
-        filterLocationsPointDialog.ui.mapPage.mainFrame().setUrl(QUrl(os.path.join(os.getcwd(), 'include', 'mapSetPoint.html')))
+        filterLocationsPointDialog.ui.mapPage.mainFrame().setUrl(QUrl(os.path.join(GeneralUtilities.getIncludeDir(), 'mapSetPoint.html')))
         filterLocationsPointDialog.ui.radiusUnitComboBox.insertItem(0, QString('km'))
         filterLocationsPointDialog.ui.radiusUnitComboBox.insertItem(1, QString('m'))
         filterLocationsPointDialog.ui.radiusUnitComboBox.activated[str].connect(filterLocationsPointDialog.onUnitChanged)

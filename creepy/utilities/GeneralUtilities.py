@@ -1,12 +1,21 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from os.path import expanduser
+import os.path
 import webbrowser
 from math import radians, cos, sin, asin, sqrt
 
     
 def getUserHome():
     return expanduser("~")
+
+def getIncludeDir():
+    """ Provide path to include directory.  Change this for installed packages """
+    incdir = os.path.join(os.getcwdu(), 'include')
+    if os.direxists(incdir):
+        return incdir
+    else:
+        return "/usr/share/creepy/include"
 
 def reportProblem():
     webbrowser.open_new_tab('https://github.com/ilektrojohn/creepy/issues')
