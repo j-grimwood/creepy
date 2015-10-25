@@ -17,28 +17,6 @@
       <div class="container">
         <h1>Creepy</h1>
         <h2>A Geolocation OSINT Tool. Offers geolocation information gathering through social networking platforms.</h2>
-
-        <h3>Windows Downloads</h3>
-        <h4>Current version : v1.4.1</h4>
-        <section id="downloads">
-          <a href="https://github.com/jkakavas/creepy/releases/download/v1.4.1/creepy_setup_v1.4.1_x64.exe" class="btn">Download 64bit Windows installer</a>
-        </section>
-        <h3>OSX Downloads</h3>
-        <h4>Current version : v1.4.1</h4>
-        <section id="downloads">
-          <a href="https://github.com/jkakavas/creepy/releases/download/v1.4.1/cree.py_1.4.1.dmg.zip" class="btn">Download OSX installer </a>
-        </section>
-        <h3>Source Code Downloads</h3>
-        <section id="downloads">
-          <a href="https://github.com/jkakavas/creepy/zipball/master" class="btn">Download as .zip</a>
-          <a href="https://github.com/jkakavas/creepy/tarball/master" class="btn">Download as .tar.gz</a>
-          <a href="https://github.com/jkakavas/creepy" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
-        </section>
-        <h3>Plugin Downloads</h3>
-        <section id="downloads">
-          <a href="https://github.com/jkakavas/creepy-plugins/zipball/master" class="btn">Download as .zip</a>
-          <a href="https://github.com/jkakavas/creepy-plugins/tarball/master" class="btn">Download as .tar.gz</a>
-        </section>
       </div>
     </header>
 
@@ -48,10 +26,6 @@
 <a name="creepy" class="anchor" href="#creepy"><span class="octicon octicon-link"></span></a>Creepy</h3>
 
 <p>Creepy is a geolocation OSINT Tool </p>
-
-<img src="Place_based_project.png"/>
-
-
 <h3>Donations</h3>
 <p> All donated money will be spent on time working for cree.py and running costs</p>
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
@@ -62,76 +36,56 @@
 <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 </form>
 <p></p>
-<h3>Description</h3>
 
-<p>Creepy is a geolocation OSINT tool. Gathers geolocation related information from online sources, and allows for presentation on map, search filtering based on exact location and/or date, export in csv format or kml for further analysis in Google Maps.</p>
-
-<h3>Video Tutorial</h3>
-<p><a href="http://www.youtube.com/watch?v=JqJ4zaDIVAs">Watch it on Youtube</a></p>
-
+<h2>Plugin Configuration</h2>
+<ol>
+<li>Click on "Plugins Configuration"</li>
+<img src="1.png"/>
 <p></p>
-<h3>Configuration</h3>
-<p>See <a href="plugin_configuration.html">Plugins Configuration</a></p>
+<li>Select Flickr Plugin on the left and click on "Run Configuration Wizard"</li>
+<img src="2.png"/>
 <p></p>
-
-<h3>Quick Start Instructions</h3>
-<ul>
-  
-    <li>Download creepy ( source code or the installers provided here for your platform )</li>
-    <li>Configure the plugins. Edit -> Plugins Configuration -> Select plugin and run the wizards, following the instructions</li>
-    <li>Create a new project : Creepy -> New Project -> Person Based Project . Search for the target selecting the available plugins.</li>
-    <li>Right click on the project -> Analyze Current Project</li>
-    <li>Wait :)</li>
-    <li>The locations will be drawn on the map, once the analysis is complete.</li>
-    <li>Filter locations, export locations, view them on the map.</li>
-
-</ul>
-
+<li>Click on "Next"</li>
+<img src="3.png"/>
 <p></p>
+<li>Enter your yahoo credentials and click on "Sign In"</li>
+<img src="4.png"/>
+<p></p>
+<li>Click on "OK, I'LL AUTHORIZE IT"</li>
+<img src="5.png"/>
+<p></p>
+<li>Copy the pin and paste it in the PIN input field. Then click "Finish"</li>
+<img src="6.png"/>
+<p></p>
+<li>Select the Instagram plugin from the left and clik on "Run Configuration Wizard"</li>
+<img src="7.png"/>
+<p></p>
+<li>Click on "Open in browser"</li>
+<img src="8.png"/>
+<p></p>
+<li>Authenticate to instagram with your credentials</li>
+<img src="9.png"/>
+<p></p>
+<li>You are redirected to www.geocreepy.com, copy your token value</li>
+<img src="10.png"/>
+<p></p>
+<li>Back in the Instagram wizard window, paste your token value and click on "Finish"</li>
+<img src="11.png"/>
+<p></p>
+<li>Select the Twitter plugin from the left and clik on "Run Configuration Wizard"</li>
+<img src="12.png"/>
+<p></p>
+<li>Click on "Next"</li>
+<img src="13.png"/>
+<p></p>
+<li>Authenticate with Twitter and click on "Authorize app"</li>
+<img src="15.png"/>
+<li>Copy the PIN and paste it in the PIN input field. Then click "Finish"</li>
+<img src="16.png"/>
 
-<h3>Installation Instructions</h3>
+</ol>
 
-<h4>Windows 7 / Windows 8</h4>
-<p>Download and run the installers from this page. Default installation location is your user directory.</p>
-
-<h4>Debian Based Distros (Ubuntu, Kali, Mint etc) </h4>
-<p>Debian package will be updated and available in the repositories soon. Stay tuned ! </p>
-<p>To run cree.py from source , first install dependencies
-<pre>
-  apt-get install python-qt4 
-  pip install pytz python-qt flickrapi python-instagram yapsy tweepy google-api-python-client python-dateutil configobj dominate
-</pre>
-
-Then run the python script CreepyMain.py with 
-<pre>
-  python CreepyMain.py
-</pre>
-</p>
-
-<h4> Kali Linux 2.0 </h4>
-<p>Kali comes with creepy v1.0 packaged. If you want to run v1.3, do the following :</p>
-<pre>
-  apt-get remove --purge creepy
-  pip install pytz python-qt flickrapi python-instagram yapsy tweepy google-api-python-client python-dateutil configobj dominate
-</pre>
-Then download the source code from <a href="https://github.com/jkakavas/creepy-plugins/tarball/master" class="btn">here</a> and run the python script CreepyMain.py with 
-<pre>
-  python CreepyMain.py
-</pre>
-
-<h4> OSX </h4>
-<p>Download the .dmg file from above, double click on it and drag 'n drop it to your Applications folder!</p>
-
-<h3>Contact</h3>
-<p><a href="https://www.facebook.com/geocreepy"> Creepy on Facebook </a></p>
-<p><a href="https://twitter.com/cree_py"> Creepy on Twitter </a></p>
-
-
-<p>You can find me on Twitter <a href="https://twitter.com/ilektrojohn">@ilektrojohn</a></p>
-<p>Send me a mail at jkakavas AT gmail DOT com</p>
-      </section>
-    </div>
-
+ </div> 
   <!-- Start of StatCounter Code for Default Guide -->
 <script type="text/javascript">
 var sc_project=9518644; 
