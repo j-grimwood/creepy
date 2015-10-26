@@ -94,7 +94,7 @@
 <h4>Windows 7 / Windows 8</h4>
 <p>Download and run the installers from this page. Default installation location is your user directory.</p>
 
-<h4>Debian Based Distros (Ubuntu, Kali, Mint etc) </h4>
+<h4>Debian Based Distros (Ubuntu, Mint etc) </h4>
 <p>Debian package will be updated and available in the repositories soon. Stay tuned ! </p>
 <p>To run cree.py from source , first install dependencies
 <pre>
@@ -109,9 +109,10 @@ Then run the python script CreepyMain.py with
 </p>
 
 <h4> Kali Linux 2.0 </h4>
-<p>Kali comes with creepy v1.0 packaged. If you want to run v1.3, do the following :</p>
+<p>Kali comes with creepy v1.0 packaged. If you want to run v1.4, do the following :</p>
 <pre>
   apt-get remove --purge creepy
+  apt-get autoremove
   pip install -U pytz python-qt flickrapi python-instagram yapsy tweepy google-api-python-client python-dateutil configobj dominate
 </pre>
 Then download the source code from <a href="https://github.com/jkakavas/creepy/tarball/master" class="btn">here</a> and run the python script CreepyMain.py with 
