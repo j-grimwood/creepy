@@ -29,7 +29,7 @@ class Instagram(InputPlugin):
     name = "instagram"
     hasWizard = True
     hasLocationBasedMode = True
-    hasRateLimitInfo = True
+    hasRateLimitInfo = False
 
     def __init__(self):
         # Try and read the labels file
