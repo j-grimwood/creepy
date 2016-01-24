@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 import codecs
 import sys
 import datetime
@@ -10,7 +11,6 @@ import functools
 import urllib2
 import webbrowser
 import pytz
-from components import creepy_resources_compiled
 from distutils.version import StrictVersion
 from PyQt4.QtCore import QString, QThread, SIGNAL, QUrl, QDateTime, QDate, QRect, Qt
 from PyQt4.QtGui import QMainWindow, QApplication, QMessageBox, QFileDialog, QWidget, QScrollArea, QVBoxLayout, QIcon, \
@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
                     if pl['pluginName'] == target['pluginName']:
                         runtimeConfig = pl['searchOptions']
                 if self.project.projectType == 'place':
-                    targetLocations = pluginObject.searchForResultsNearPlace(",".join(target['poi']))
+                    targetLocations = pluginObject.searchForResultsNearPlace(','.join(target['poi']))
                     # No analysis page yet for place based projects
                     targetAnalysisDiv = ''
                 else:
@@ -129,7 +129,7 @@ class MainWindow(QMainWindow):
             self.emit(SIGNAL('locations(PyQt_PyObject)'), self.project)
 
     def __init__(self, parent=None):
-        self.version = "1.4.1"
+        self.version = '1.5'
         QWidget.__init__(self, parent)
         self.ui = Ui_CreepyMainWindow()
         self.ui.setupUi(self)
@@ -189,11 +189,9 @@ class MainWindow(QMainWindow):
         """
         Checks www.geocreepy.com for an updated version and returns a tuple with the
         result and the latest version number
-
         """
-
         try:
-            latestVersion = urllib2.urlopen("http://www.geocreepy.com/version.html").read().rstrip()
+            latestVersion = urllib2.urlopen('http://www.geocreepy.com/version.html').read().rstrip()
 
             updateCheckDialog = UpdateCheckDialog()
             updateCheckDialog.ui.versionsTableWidget.setHorizontalHeaderLabels(
@@ -204,7 +202,8 @@ class MainWindow(QMainWindow):
                     QIcon(QPixmap(':/creepy/exclamation')), ''))
                 updateCheckDialog.ui.versionsTableWidget.setItem(0, 2, QTableWidgetItem('Outdated'))
                 updateCheckDialog.ui.dlNewVersionLabel.setText(
-                    '<html><head/><body><p>Download the latest version from <a href="http://www.geocreepy.com"><span style=" text-decoration: underline; color:#0000ff;">geocreepy.com</span></a></p></body></html>')
+                    '<html><head/><body><p>Download the latest version from <a href="http://www.geocreepy.com"><span '
+                    'style=" text-decoration: underline; color:#0000ff;">geocreepy.com</span></a></p></body></html>')
             else:
                 updateCheckDialog.ui.versionsTableWidget.setItem(0, 0,
                                                                  QTableWidgetItem(QIcon(QPixmap(':/creepy/tick')), ''))
@@ -219,13 +218,13 @@ class MainWindow(QMainWindow):
             if type(err) == 'string':
                 mes = err
             else:
-                mess = err.message
-            self.showWarning(self.trUtf8('Error checking for updates'), mess)
+                mes = err.message
+            self.showWarning(self.trUtf8('Error checking for updates'), mes)
 
     def showFilterLocationsPointDialog(self):
         filterLocationsPointDialog = FilterLocationsPointDialog()
         filterLocationsPointDialog.ui.mapPage = QWebPage()
-        myPyObj = filterLocationsPointDialog.pyObj()
+        myPyObj = filterLocationsPointDialog.PyObj()
         filterLocationsPointDialog.ui.mapPage.mainFrame().addToJavaScriptWindowObject('myPyObj', myPyObj)
         filterLocationsPointDialog.ui.mapPage.mainFrame().setUrl(
             QUrl(os.path.join(GeneralUtilities.getIncludeDir(), 'mapSetPoint.html')))
@@ -254,8 +253,8 @@ class MainWindow(QMainWindow):
                           filterLocationsDateDialog.ui.startDateTimeEdit.time()).toPyDateTime())
             endDateTime = pytz.utc.localize(QDateTime(filterLocationsDateDialog.ui.endDateCalendarWidget.selectedDate(),
                                                       filterLocationsDateDialog.ui.endDateTimeEdit.time()).toPyDateTime())
-            logger.debug("Filtering based on dates between : " + startDateTime.strftime(
-                '%Y-%m-%d %H:%M:%S %z') + "  " + endDateTime.strftime('%Y-%m-%d %H:%M:%S %z'))
+            logger.debug('Filtering based on dates between : ' + startDateTime.strftime(
+                '%Y-%m-%d %H:%M:%S %z') + '  ' + endDateTime.strftime('%Y-%m-%d %H:%M:%S %z'))
             if startDateTime > endDateTime:
                 self.showWarning(self.trUtf8('Invalid Dates'), self.trUtf8(
                     'The start date needs to be before the end date.<p> Please try again ! </p>'))
@@ -277,7 +276,6 @@ class MainWindow(QMainWindow):
         for hourOfDay in range(24):
             filterLocationsCustomDialog.ui.hoursOfDayListWidget.addItem(str(hourOfDay))
         if filterLocationsCustomDialog.exec_():
-            t = filterLocationsCustomDialog.ui.daysOfWeekListWidget.selectedItems()
             days = [daysOfWeek.index(str(selItem.text())) for selItem in
                     filterLocationsCustomDialog.ui.daysOfWeekListWidget.selectedItems()]
             hours = [int(selItem.text()) for selItem in
@@ -350,7 +348,7 @@ class MainWindow(QMainWindow):
             pass
 
     def showWarning(self, title, text):
-        QMessageBox.warning(self, title, text)
+        QMessageBox.warning(self, title, text, None)
 
     def toggleHeatMap(self, checked):
         mapFrame = self.ui.mapWebPage.mainFrame()
@@ -400,7 +398,7 @@ class MainWindow(QMainWindow):
         projectName = project.projectName + '.db'
         verifyDeleteDialog = VerifyDeleteDialog()
         verifyDeleteDialog.ui.label.setText(
-            unicode(verifyDeleteDialog.ui.label.text(), 'utf-8').replace('@project@', project.projectName))
+            unicode(verifyDeleteDialog.ui.label.text()).replace('@project@', project.projectName))
         verifyDeleteDialog.show()
         if verifyDeleteDialog.exec_():
             project.deleteProject(projectName)
@@ -426,7 +424,8 @@ class MainWindow(QMainWindow):
                 fileobj = codecs.open(fileName, 'wb', encoding='utf8')
                 linesList = []
                 linesList.append(
-                    '"Timestamp","Latitude","Longitude","Accuracy","Location Name","Retrieved from","Username","Context"')
+                    '"Timestamp","Latitude","Longitude","Accuracy",'
+                    '"Location Name","Retrieved from","Username","Context"')
                 for loc in project.locations:
                     if (filtering and loc.visible) or not filtering:
                         linesList.append(u'"{0:s}","{1:s}","{2:s}","{3:s}","{4:s}","{5:s}","{6:s}","{7:s}"'.format(
@@ -532,18 +531,16 @@ class MainWindow(QMainWindow):
             self.showWarning(self.trUtf8('No project selected'), self.trUtf8('Please select a project !'))
 
     def projectAnalysisFinished(self, project):
-        '''
+        """
         Called when the analysis thread finishes. It saves the project with the locations and draws the map
-        '''
+        """
         self.ui.statusbar.showMessage(self.trUtf8('Project Analysis complete !'))
         projectNode = ProjectNode(project.projectName, project)
         locationsNode = LocationsNode(self.trUtf8('Locations'), projectNode)
         analysisNode = AnalysisNode(self.trUtf8('Analysis'), projectNode)
         project.isAnalysisRunning = False
         project.storeProject(projectNode)
-        '''
-        If the analysis produced no results whatsoever, inform the user
-        '''
+        # If the analysis produced no results whatsoever, inform the user
         if not project.locations:
             self.showWarning(self.trUtf8('No Locations Found'),
                              self.trUtf8('We could not find any locations for the analyzed project'))
@@ -607,10 +604,10 @@ class MainWindow(QMainWindow):
         self.setMapZoom(mapFrame, 18)
 
     def updateCurrentLocationDetails(self, index):
-        '''
+        """
         Called when the user clicks on a location from the location list. It updates the information
         displayed on the Current Target Details Window
-        '''
+        """
         location = self.locationsTableModel.locations[index.row()]
         self.ui.currentTargetDetailsLocationValue.setText(location.shortName)
         self.ui.currentTargetDetailsDateValue.setText(location.datetime.strftime('%Y-%m-%d %H:%M:%S %z'))
@@ -618,20 +615,20 @@ class MainWindow(QMainWindow):
         self.ui.currentTargetDetailsContextValue.setText(location.context)
 
     def changeMainWidgetPage(self, pageType):
-        '''
+        """
         Changes what is shown in the main window between the map mode and the analysis mode
-        '''
+        """
         if 'map' == pageType:
             self.ui.centralStackedWidget.setCurrentIndex(0)
         elif pageType == 'analysis':
             self.ui.centralStackedWidget.setCurrentIndex(1)
 
     def wizardButtonPressed(self, plugin):
-        '''
+        """
         This method calls the wizard of the selected plugin and then reads again the configuration options from file
         for that specific plugin. This happens in order to reflect any changes the wizard might have made to the configuration
         options.
-        '''
+        """
 
         plugin.plugin_object.runConfigWizard()
         self.pluginsConfigurationDialog.close()
@@ -665,9 +662,7 @@ class MainWindow(QMainWindow):
             vbox = QGridLayout()
             vbox.setObjectName(_fromUtf8('vbox_container_' + plugin.name))
             gridLayoutRowIndex = 0
-            '''
-            Load the String options first
-            '''
+            # Load the String options first
             pluginStringOptions = plugin.plugin_object.readConfiguration('string_options')[1]
             if pluginStringOptions != None:
                 for idx, item in enumerate(pluginStringOptions.keys()):
@@ -683,9 +678,7 @@ class MainWindow(QMainWindow):
                     value.setText(pluginStringOptions[item])
                     vbox.addWidget(value, idx, 1)
                     gridLayoutRowIndex = idx + 1
-            '''
-            Load the boolean options
-            '''
+            # Load the boolean options
             pluginBooleanOptions = plugin.plugin_object.readConfiguration('boolean_options')[1]
             if pluginBooleanOptions != None:
                 for idx, item in enumerate(pluginBooleanOptions.keys()):
@@ -696,9 +689,7 @@ class MainWindow(QMainWindow):
                         cb.toggle()
                     vbox.addWidget(cb, gridLayoutRowIndex + idx, 0)
                     gridLayoutRowIndex += 1
-            '''
-            Add the wizard button if the plugin has a configuration wizard
-            '''
+            # Add the wizard button if the plugin has a configuration wizard
             if plugin.plugin_object.hasWizard:
                 wizardButton = QPushButton(self.trUtf8('Run Configuration Wizard'))
                 wizardButton.setObjectName(_fromUtf8('wizardButton_' + plugin.name))
@@ -752,22 +743,20 @@ class MainWindow(QMainWindow):
         self.PluginConfigurationListModel.checkPluginConfiguration()
         self.pluginsConfigurationDialog.ui.PluginsList.setModel(self.PluginConfigurationListModel)
         self.pluginsConfigurationDialog.ui.PluginsList.clicked.connect(self.changePluginConfigurationPage)
-        # If we are refreshing the dialog after successful plugin configuration, return to the same plugin
-
         if self.pluginsConfigurationDialog.exec_():
             self.pluginsConfigurationDialog.saveConfiguration()
 
     def changePluginConfigurationPage(self, modelIndex):
-        '''
+        """
         Changes the page in the PluginConfiguration Dialog depending on which plugin is currently
         selected in the plugin list
-        '''
+        """
         self.pluginsConfigurationDialog.ui.ConfigurationDetails.setCurrentIndex(modelIndex.row())
 
     def showPersonProjectWizard(self):
-        '''
+        """
         Shows the PersonProjectWizard and stores the project information once the wizard is completed
-        '''
+        """
         personProjectWizard = PersonProjectWizard()
         personProjectWizard.ProjectWizardPluginListModel = ProjectWizardPluginListModel(
             personProjectWizard.loadConfiguredPlugins(), self)
@@ -779,10 +768,10 @@ class MainWindow(QMainWindow):
         if personProjectWizard.exec_():
             project = Project()
             project.projectType = 'person'
-            project.projectName = unicode(personProjectWizard.ui.personProjectNameValue.text().toUtf8(), 'utf-8')
+            project.projectName = unicode(personProjectWizard.ui.personProjectNameValue.text().toUtf8())
             project.projectKeywords = [keyword.strip() for keyword in
-                                       unicode(personProjectWizard.ui.personProjectKeywordsValue.text().toUtf8(),
-                                               'utf-8').split(',')]
+                                       unicode(personProjectWizard.ui.personProjectKeywordsValue.text().toUtf8()).split(
+                                           ',')]
             project.projectDescription = personProjectWizard.ui.personProjectDescriptionValue.toPlainText()
             project.enabledPlugins = personProjectWizard.readSearchConfiguration()
             project.dateCreated = datetime.datetime.now()
@@ -803,9 +792,12 @@ class MainWindow(QMainWindow):
         """
         Shows the PlaceProjectWizard and stores the project information once the wizard is completed
         """
+
         def searchForPlace():
             placeProjectWizard.ui.mapPage.mainFrame().evaluateJavaScript(
-                QString('searchForAddress(\"'+unicode(placeProjectWizard.ui.searchAddressInput.text().toUtf8(), 'utf-8')+'\");'))
+                QString('searchForAddress(\"' + unicode(placeProjectWizard.ui.searchAddressInput.text().toUtf8()) +
+                        '\");'))
+
         placeProjectWizard = PlaceProjectWizard()
         placeProjectWizard.ProjectWizardPluginListModel = ProjectWizardPluginListModel(
             placeProjectWizard.loadConfiguredPlugins(), self)
@@ -825,10 +817,10 @@ class MainWindow(QMainWindow):
         if placeProjectWizard.exec_():
             project = Project()
             project.projectType = 'place'
-            project.projectName = unicode(placeProjectWizard.ui.placeProjectNameValue.text().toUtf8(), 'utf-8')
+            project.projectName = unicode(placeProjectWizard.ui.placeProjectNameValue.text().toUtf8())
             project.projectKeywords = [keyword.strip() for keyword in
-                                       unicode(placeProjectWizard.ui.placeProjectKeywordsValue.text().toUtf8(),
-                                               'utf-8').split(',')]
+                                       unicode(placeProjectWizard.ui.placeProjectKeywordsValue.text().toUtf8()).split(
+                                           ',')]
             project.projectDescription = placeProjectWizard.ui.placeProjectDescriptionValue.toPlainText()
             project.selectedTargets = []
             project.enabledPlugins = placeProjectWizard.readSearchConfiguration()
@@ -868,11 +860,11 @@ class MainWindow(QMainWindow):
         self.projectTreeModel = ProjectTreeModel(rootNode)
         self.ui.treeViewProjects.setModel(self.projectTreeModel)
 
-    def currentProjectChanged(self, index):
-        '''
+    def currentProjectChanged(self):
+        """
         Called whenever a project node or one of its children is clicked
         and makes this the currently selected project
-        '''
+        """
         nodeObject = self.ui.treeViewProjects.selectionModel().selection().indexes()[0].internalPointer()
         if nodeObject.nodeType() == 'PROJECT':
             self.currentProject = nodeObject.project
@@ -882,9 +874,9 @@ class MainWindow(QMainWindow):
             self.currentProject = nodeObject.parent().project
 
     def doubleClickProjectItem(self):
-        '''
+        """
         Called when the user double-clicks on an item in the tree of the existing projects
-        '''
+        """
         nodeObject = self.ui.treeViewProjects.selectionModel().selection().indexes()[0].internalPointer()
         if nodeObject.nodeType() == 'PROJECT':
             self.currentProject = nodeObject.project

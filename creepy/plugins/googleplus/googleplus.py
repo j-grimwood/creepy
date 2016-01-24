@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from models.InputPlugin import InputPlugin
-from oauth2client.client import OAuth2WebServerFlow, AccessTokenCredentials, Credentials
+from oauth2client.client import OAuth2WebServerFlow, AccessTokenCredentials
 from googleapiclient.discovery import build
 import logging
 import os
@@ -26,7 +26,6 @@ logger.addHandler(guiLoggingHandler)
 
 
 class Googleplus(InputPlugin):
-
     name = 'googleplus'
     hasWizard = True
     hasRateLimitInfo = False
@@ -35,7 +34,7 @@ class Googleplus(InputPlugin):
     def __init__(self):
         # Try and read the labels file
         self.http = httplib2.Http()
-        labels_config = self.getConfigObj(self.name+'.labels')
+        labels_config = self.getConfigObj(self.name + '.labels')
         try:
             self.labels = labels_config['labels']
         except Exception, err:
@@ -56,23 +55,23 @@ class Googleplus(InputPlugin):
             peopleDocument = peopleResource.search(query=search_term).execute()
 
             if 'items' in peopleDocument:
-                logger.debug("Google+ returned  "+str(len(peopleDocument['items']))+" results")
+                logger.debug('Google+ returned  ' + str(len(peopleDocument['items'])) + ' results')
                 for person in peopleDocument['items']:
                     target = {'pluginName': 'GooglePlus Plugin',
                               'targetUserid': person['id'],
                               'targetUsername': person['displayName'],
                               'targetPicture': 'profile_pic_%s' % person['id'],
                               'targetFullname': person['displayName']}
-                    #save the pic in the temp folder to show it later
+                    # save the pic in the temp folder to show it later
                     filename = 'profile_pic_%s' % person['id']
                     temp_file = os.path.join(GeneralUtilities.getTempDir(), filename)
-                    #Retieve and save the profile photo only if it does not exist
+                    # Retieve and save the profile photo only if it does not exist
                     if not os.path.exists(temp_file):
                         urllib.urlretrieve(person['image']['url'], temp_file)
                     possibleTargets.append(target)
         except Exception, err:
             logger.error(err)
-            logger.error("Error searching for targets in Google+ plugin.")
+            logger.error('Error searching for targets in Google+ plugin.')
         return possibleTargets
 
     def getAuthenticatedService(self):
@@ -86,7 +85,7 @@ class Googleplus(InputPlugin):
             return service
         except Exception, e:
             logger.error(e)
-            logger.error("Error getting an authentication context")
+            logger.error('Error getting an authentication context')
             return None
 
     def runConfigWizard(self):
@@ -97,7 +96,7 @@ class Googleplus(InputPlugin):
                                        redirect_uri='urn:ietf:wg:oauth:2.0:oob')
             authorizationURL = flow.step1_get_authorize_url()
             self.wizard = QWizard()
-            self.wizard.setWindowTitle("Google+ plugin configuration wizard")
+            self.wizard.setWindowTitle('Google+ plugin configuration wizard')
             page1 = QWizardPage()
             page2 = QWizardPage()
             layout1 = QVBoxLayout()
@@ -105,7 +104,8 @@ class Googleplus(InputPlugin):
             layoutInputPin = QHBoxLayout()
 
             label1a = QLabel(
-                'Click next to connect to Google. Please login with your account and follow the instructions in order to authorize creepy')
+                'Click next to connect to Google. Please login with your account and follow the instructions in order \
+                to authorize creepy')
             label2a = QLabel(
                 'Copy the code that you will receive once you authorize cree.py in the field below and click finish')
             codeLabel = QLabel('Code')
@@ -128,7 +128,7 @@ class Googleplus(InputPlugin):
             page2.registerField('inputCode*', inputCode)
             self.wizard.addPage(page1)
             self.wizard.addPage(page2)
-            self.wizard.resize(800,600)
+            self.wizard.resize(800, 600)
 
             if self.wizard.exec_():
                 try:
@@ -138,9 +138,9 @@ class Googleplus(InputPlugin):
                 except Exception, err:
                     logger.error(err)
                     self.showWarning('Error completing the wizard',
-                                     'We were unable to obtain the credentials for your account, please try to run the wizard again.')
-
-        except Exception,err:
+                                     'We were unable to obtain the credentials for your account, please try to run the\
+                                      wizard again.')
+        except Exception, err:
             logger.error(err)
 
     def showWarning(self, title, text):
@@ -149,10 +149,6 @@ class Googleplus(InputPlugin):
         except Exception, err:
             logger(err)
 
-    '''
-    Returns a tuple. The first element is True or False, depending if the plugin is configured or not. The second
-    element contains an optional message for the user
-    '''
     def isConfigured(self):
         if self.service is None:
             self.service = self.getAuthenticatedService()
@@ -169,17 +165,18 @@ class Googleplus(InputPlugin):
             self.service = self.getAuthenticatedService()
         locations_list = []
         try:
-            logger.debug("Attempting to retrieve the activities from Google Plus for user "+target['targetUserid'])
+            logger.debug('Attempting to retrieve the activities from Google Plus for user ' + target['targetUserid'])
             activitiesResource = self.service.activities()
 
             request = activitiesResource.list(userId=target['targetUserid'], collection='public')
             while request:
                 activitiesDocument = request.execute()
-                logger.debug('{0} activities were retrieved from GooglePlus Plugin'.format(str(len(activitiesDocument['items']))))
+                logger.debug('{0} activities were retrieved from GooglePlus Plugin'.format(
+                    str(len(activitiesDocument['items']))))
                 for activity in activitiesDocument['items']:
                     if hasattr(activity, 'location'):
                         loc = {}
-                        loc['plugin'] = "googleplus"
+                        loc['plugin'] = 'googleplus'
                         loc['context'] = activity['object']['content']
                         loc['infowindow'] = self.constructContextInfoWindow(activity, target['targetUsername'])
                         loc['date'] = dateutil.parser.parse(activity['published'])
@@ -190,7 +187,7 @@ class Googleplus(InputPlugin):
                         locations_list.append(loc)
                     elif hasattr(activity, 'geocode'):
                         loc = {}
-                        loc['plugin'] = "googleplus"
+                        loc['plugin'] = 'googleplus'
                         loc['context'] = activity['object']['content']
                         loc['infowindow'] = self.constructContextInfoWindow(activity, target['targetUsername'])
                         loc['date'] = dateutil.parser.parse(activity['published'])
@@ -202,7 +199,7 @@ class Googleplus(InputPlugin):
             logger.debug('{0} locations were retrieved from GooglePlus Plugin'.format(str(len(locations_list))))
         except Exception, e:
             logger.error(e)
-            logger.error("Error getting locations from GooglePlus plugin")
+            logger.error('Error getting locations from GooglePlus plugin')
         return locations_list, None
 
     def constructContextInfoWindow(self, activity, username):
@@ -211,10 +208,10 @@ class Googleplus(InputPlugin):
             '@PLUGIN@', u'googleplus').replace('@USERNAME@', username)
 
     def getLabelForKey(self, key):
-        '''
+        """
         read the plugin_name.labels 
         file and try to get label text for the key that was asked
-        '''
+        """
         if not self.labels:
             return key
         if key not in self.labels.keys():

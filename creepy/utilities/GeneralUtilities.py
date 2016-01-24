@@ -17,11 +17,11 @@ def getIncludeDir():
     if os.path.isdir(incdir):
         return incdir
     else:
-        return "/usr/share/creepy/include"
+        return '/usr/share/creepy/include'
 
 
 def getLogDir():
-    logdir = expanduser("~/.creepy")
+    logdir = expanduser('~/.creepy')
     try:
         os.makedirs(logdir)
     except OSError as e:
@@ -33,49 +33,52 @@ def getLogDir():
 
 
 def getProjectsDir():
-    if os.path.exists("/usr/share/creepy"):
-        dir = os.path.join(expanduser("~/.creepy"), "projects")
+    if os.path.exists('/usr/share/creepy'):
+        directory = os.path.join(expanduser('~/.creepy'), 'projects')
     else:
-        dir = os.path.join(os.getcwd(), 'projects')
+        directory = os.path.join(os.getcwd(), 'projects')
     try:
-        os.makedirs(dir)
+        os.makedirs(directory)
     except OSError as e:
         if e.errno == errno.EEXIST and os.path.isdir(dir):
             pass
         else:
             raise
-    return dir
+    return directory
 
 def getTempDir():
-    if os.path.exists("/usr/share/creepy"):
-        dir = os.path.join(expanduser("~/.creepy"), "temp")
+    if os.path.exists('/usr/share/creepy'):
+        directory = os.path.join(expanduser('~/.creepy'), 'temp')
     else:
-        dir = os.path.join(os.getcwd(), 'temp')
+        directory = os.path.join(os.getcwd(), 'temp')
     try:
-        os.makedirs(dir)
+        os.makedirs(directory)
     except OSError as e:
-        if e.errno == errno.EEXIST and os.path.isdir(dir):
+        if e.errno == errno.EEXIST and os.path.isdir(directory):
             pass
         else:
             raise
-    return dir
+    return directory
 
 def getLocalPluginDir(pluginname):
-    if os.path.exists("/usr/share/creepy/plugins"):
-        localplugindir = expanduser(os.path.join("~/.creepy/plugins", pluginname))
-        try: os.makedirs(localplugindir)
+    if os.path.exists('/usr/share/creepy/plugins'):
+        localplugindir = expanduser(os.path.join('~/.creepy/plugins', pluginname))
+        try:
+            os.makedirs(localplugindir)
         except OSError as e:
-            if e.errno == errno.EEXIST and os.path.isdir(localplugindir): pass
-            else: raise
+            if e.errno == errno.EEXIST and os.path.isdir(localplugindir):
+                pass
+            else:
+                raise
         return localplugindir
     else:
         return [os.path.join(os.getcwd(), 'plugins')]
 
 def getPluginDirs():
-    if os.path.exists("/usr/share/creepy/plugins"):
+    if os.path.exists('/usr/share/creepy/plugins'):
         # if creepy is installed via debian package
         return [os.path.join(os.getcwd(), 'plugins'),
-                "/usr/share/creepy/plugins",
+                '/usr/share/creepy/plugins',
                 '~/.creepy/plugins']
     else:
         return [os.path.join(os.getcwd(), 'plugins')]

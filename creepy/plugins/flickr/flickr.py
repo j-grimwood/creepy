@@ -26,7 +26,7 @@ logger.addHandler(guiLoggingHandler)
 
 
 class Flickr(InputPlugin):
-    name = "flickr"
+    name = 'flickr'
     hasWizard = True
     hasRateLimitInfo = False
     hasLocationBasedMode = True
@@ -38,9 +38,9 @@ class Flickr(InputPlugin):
             self.labels = labels_config['labels']
         except Exception, err:
             self.labels = None
-            logger.error("Could not load the labels file for the  " + self.name + " plugin .")
+            logger.error('Could not load the labels file for the  ' + self.name + ' plugin .')
             logger.error(err)
-        self.config, self.options_string = self.readConfiguration("string_options")
+        self.config, self.options_string = self.readConfiguration('string_options')
         self.api = None
 
     def getAuthenticatedAPI(self):
@@ -77,8 +77,8 @@ class Flickr(InputPlugin):
         except Exception, e:
             logger.error(e)
             if e.message == 'Error: 1: User not found':
-                logger.info("No results for search query " + search_term + " from Flickr Plugin")
-        logger.debug(str(len(possibleTargets)) + " possible targets were found matching the search query")
+                logger.info('No results for search query ' + search_term + ' from Flickr Plugin')
+        logger.debug(str(len(possibleTargets)) + ' possible targets were found matching the search query')
         # Flickr returns 2 entries per user, one with nsid and one with id , they are exactly the same
         if possibleTargets:
             return [dict(t) for t in set([tuple(d.items()) for d in possibleTargets])]
@@ -109,17 +109,17 @@ class Flickr(InputPlugin):
             else:
                 return None
         except Exception, err:
-            logger.error("Error getting target info from Flickr for target " + userId)
+            logger.error('Error getting target info from Flickr for target ' + userId)
             logger.error(err)
             return None
 
     def isConfigured(self):
         try:
             if not self.options_string:
-                self.options_string = self.readConfiguration("string_options")[1]
+                self.options_string = self.readConfiguration('string_options')[1]
             if self.api is None:
                 self.api = self.getAuthenticatedAPI()
-            self.api.people_findByUsername(username="testAPIKey");
+            self.api.people_findByUsername(username='testAPIKey')
             return True, ''
         except Exception, e:
             logger.error('Error establishing connection to Flickr API.')
@@ -130,14 +130,15 @@ class Flickr(InputPlugin):
         if self.api is None:
             self.api = self.getAuthenticatedAPI()
         try:
-            results = self.api.people_getPublicPhotos(user_id=unicode(userid), extras="geo, date_taken, url_m, owner_name", per_page=500,
+            results = self.api.people_getPublicPhotos(user_id=unicode(userid),
+                                                      extras='geo, date_taken, url_m, owner_name', per_page=500,
                                                       page=page_nr)
             if results.attrib['stat'] == 'ok':
                 return results.find('photos').findall('photo')
             else:
                 return []
         except Exception, err:
-            logger.error("Error getting photos per page from Flickr")
+            logger.error('Error getting photos per page from Flickr')
             logger.error(err)
             return []
 
@@ -148,7 +149,7 @@ class Flickr(InputPlugin):
                 try:
                     if photo.attrib['latitude'] != '0':
                         loc = {}
-                        loc['plugin'] = "flickr"
+                        loc['plugin'] = 'flickr'
                         loc['username'] = photo.attrib['ownername']
                         photo_link = unicode(
                             'http://www.flickr.com/photos/%s/%s' % (photo.attrib['owner'], photo.attrib['id']), 'utf-8')
@@ -156,15 +157,16 @@ class Flickr(InputPlugin):
                         # If the title is a string, make it unicode
                         if isinstance(title, str):
                             title = title.decode('utf-8')
-                        loc['context'] = u'Photo from flickr  \n Title : %s \n ' % (title)
+                        loc['context'] = u'Photo from flickr  \n Title : {0} \n '.format(title)
                         loc['date'] = pytz.utc.localize(
-                            datetime.datetime.strptime(photo.attrib['datetaken'], "%Y-%m-%d %H:%M:%S"))
+                            datetime.datetime.strptime(photo.attrib['datetaken'], '%Y-%m-%d %H:%M:%S'))
                         loc['lat'] = photo.attrib['latitude']
                         loc['lon'] = photo.attrib['longitude']
                         loc['accuracy'] = 'high'
-                        loc['shortName'] = "Unavailable"
+                        loc['shortName'] = 'Unavailable'
                         loc['media_url'] = photo.attrib['url_m']
-                        loc['infowindow'] = self.constructContextInfoWindow(photo_link, loc['date'], loc['media_url'], loc['username'])
+                        loc['infowindow'] = self.constructContextInfoWindow(photo_link, loc['date'], loc['media_url'],
+                                                                            loc['username'])
                         locations.append(loc)
                 except Exception, err:
                     logger.error(err)
@@ -176,14 +178,15 @@ class Flickr(InputPlugin):
         if self.api is None:
             self.api = self.getAuthenticatedAPI()
         try:
-            results = self.api.people_getPublicPhotos(user_id=unicode(target['targetUserid']), extras="geo, date_taken, url_m, owner_name",
+            results = self.api.people_getPublicPhotos(user_id=unicode(target['targetUserid']),
+                                                      extras='geo, date_taken, url_m, owner_name',
                                                       per_page=500)
 
             if results.attrib['stat'] == 'ok':
                 res = results.find('photos')
                 total_photos = res.attrib['total']
                 pages = int(res.attrib['pages'])
-                logger.debug("Photo results from Flickr were " + str(pages) + " pages and " + total_photos + " photos.")
+                logger.debug('Photo results from Flickr were ' + str(pages) + ' pages and ' + total_photos + ' photos.')
                 if pages > 1:
                     for i in range(1, pages + 1, 1):
                         photosList.extend(self.getPhotosByPage(unicode(str(target['targetUserid'])), i))
@@ -192,7 +195,7 @@ class Flickr(InputPlugin):
 
                 locationsList = self.getLocationsFromPhotos(photosList, target)
         except FlickrError, err:
-            logger.error("Error getting locations from Flickr")
+            logger.error('Error getting locations from Flickr')
             logger.error(err)
         return locationsList, None
 
@@ -205,11 +208,14 @@ class Flickr(InputPlugin):
                 radius = geocode.split(',')[2].replace('km', '')
             else:
                 radius = str(int(geocode.split(',')[2].replace('m', '')) / 1000)
-            logger.debug("Searching Flickr for photos around {0},{1} with radius {2} km".format(geocode.split(',')[0], geocode.split(',')[1], radius))
+            logger.debug('Searching Flickr for photos around {0},{1} with radius {2} km'.format(geocode.split(',')[0],
+                                                                                                geocode.split(',')[1],
+                                                                                                radius))
             # Search for only the last 12 days
             mintakendate = datetime.date.today() - datetime.timedelta(days=12)
-            for photo in self.api.walk(has_geo="1", per_page=500, lat=geocode.split(',')[0], lon=geocode.split(',')[1],
-                                       radius=radius, extras="geo, date_taken, url_m, owner_name", min_taken_date=mintakendate.strftime("%Y-%m-%d %H:%M:%S")):
+            for photo in self.api.walk(has_geo='1', per_page=500, lat=geocode.split(',')[0], lon=geocode.split(',')[1],
+                                       radius=radius, extras='geo, date_taken, url_m, owner_name',
+                                       min_taken_date=mintakendate.strftime('%Y-%m-%d %H:%M:%S')):
                 loc = {}
                 loc['plugin'] = 'flickr'
                 loc['username'] = photo.attrib['ownername']
@@ -219,19 +225,20 @@ class Flickr(InputPlugin):
                 # If the title is a string, make it unicode
                 if isinstance(title, str):
                     title = title.decode('utf-8')
-                loc['context'] = u'Photo from flickr  \n Title : %s \n ' % (title)
+                loc['context'] = u'Photo from flickr  \n Title : {0} \n '.format(title)
                 loc['date'] = pytz.utc.localize(
-                    datetime.datetime.strptime(photo.attrib['datetaken'], "%Y-%m-%d %H:%M:%S"))
+                    datetime.datetime.strptime(photo.attrib['datetaken'], '%Y-%m-%d %H:%M:%S'))
                 loc['lat'] = photo.attrib['latitude']
                 loc['lon'] = photo.attrib['longitude']
                 loc['accuracy'] = 'high'
-                loc['shortName'] = "Unavailable"
+                loc['shortName'] = 'Unavailable'
                 loc['media_url'] = photo.attrib['url_m']
-                loc['infowindow'] = self.constructContextInfoWindow(photo_link, loc['date'], loc['media_url'], loc['username'])
+                loc['infowindow'] = self.constructContextInfoWindow(photo_link, loc['date'], loc['media_url'],
+                                                                    loc['username'])
                 locationsList.append(loc)
-            logger.debug("Retrieved {0} photos from Flickr".format(len(locationsList)))
+            logger.debug('Retrieved {0} photos from Flickr'.format(len(locationsList)))
         except FlickrError, err:
-            logger.error("Error getting locations from Flickr")
+            logger.error('Error getting locations from Flickr')
             logger.error(err)
         return locationsList
 
@@ -243,7 +250,7 @@ class Flickr(InputPlugin):
             authorizationURL = flickr.auth_url(perms=u'read')
 
             self.wizard = QWizard()
-            self.wizard.setWindowTitle("Flickr plugin configuration wizard")
+            self.wizard.setWindowTitle('Flickr plugin configuration wizard')
             page1 = QWizardPage()
             page2 = QWizardPage()
             layout1 = QVBoxLayout()
@@ -251,12 +258,13 @@ class Flickr(InputPlugin):
             layoutInputPin = QHBoxLayout()
 
             label1a = QLabel(
-                "Click next to connect to flickr.com . Please login with your account and follow the instructions in order to authorize creepy")
+                'Click next to connect to flickr.com . Please login with your account and follow the instructions in \
+                order to authorize creepy')
             label2a = QLabel(
-                "Copy the PIN that you will receive once you authorize cree.py in the field below and click finish")
-            pinLabel = QLabel("PIN")
+                'Copy the PIN that you will receive once you authorize cree.py in the field below and click finish')
+            pinLabel = QLabel('PIN')
             inputPin = QLineEdit()
-            inputPin.setObjectName("inputPin")
+            inputPin.setObjectName('inputPin')
 
             html = QWebView()
             html.load(QUrl(authorizationURL))
@@ -270,30 +278,31 @@ class Flickr(InputPlugin):
 
             page1.setLayout(layout1)
             page2.setLayout(layout2)
-            page2.registerField("inputPin*", inputPin)
+            page2.registerField('inputPin*', inputPin)
             self.wizard.addPage(page1)
             self.wizard.addPage(page2)
             self.wizard.resize(800, 600)
 
             if self.wizard.exec_():
                 try:
-                    verifier = unicode(self.wizard.field("inputPin").toString())
+                    verifier = unicode(self.wizard.field('inputPin').toString())
                     flickr.get_access_token(verifier)
                     self.options_string['hidden_access_token'] = flickr.token_cache.token.token
                     self.options_string['hidden_access_token_secret'] = flickr.token_cache.token.token_secret
                     self.saveConfiguration(self.config)
                 except Exception, err:
                     logger.error(err)
-                    self.showWarning("Error completing the wizard",
-                                     "We were unable to obtain the access token for your account, please try to run the wizard again.")
+                    self.showWarning('Error completing the wizard',
+                                     'We were unable to obtain the access token for your account, please try \
+                                     to run the wizard again.')
 
         except Exception, err:
             logger.error(err)
 
     def constructContextInfoWindow(self, link, date, media_url, username):
         html = unicode(self.options_string['infowindow_html'], 'utf-8')
-        return html.replace("@LINK@", link).replace("@DATE@", date.strftime("%Y-%m-%d %H:%M:%S %z")).replace("@PLUGIN@",
-                                                                                                             u"flickr").replace("@MEDIA_URL@", media_url).replace("@USERNAME@", username)
+        return html.replace('@LINK@', link).replace('@DATE@', date.strftime('%Y-%m-%d %H:%M:%S %z')).\
+            replace('@PLUGIN@', u'flickr').replace('@MEDIA_URL@', media_url).replace('@USERNAME@', username)
 
     def getLabelForKey(self, key):
         """

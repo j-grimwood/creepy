@@ -6,6 +6,7 @@ from ui.FilterLocationsPointDialog import Ui_FilteLocationsPointDialog
 
 
 class FilterLocationsPointDialog(QDialog):
+    """ Loads the Filter Locations by Point Dialog from the ui and shows it """
     def __init__(self, parent=None):
         # Load the UI from the python file
         QDialog.__init__(self, parent)
@@ -16,11 +17,11 @@ class FilterLocationsPointDialog(QDialog):
     def onUnitChanged(self, index):
         self.unit = index
 
-    class pyObj(QObject):
-        def __init__(self, parent=None):
+    class PyObj(QObject):
+        def __init__(self):
             QObject.__init__(self)
-            self.selectedLat = None
-            self.selectedLng = None
+            self.lat = None
+            self.lng = None
 
         @pyqtSlot(str)
         def setLatLng(self, latlng):

@@ -5,7 +5,6 @@ from PyQt4.Qt import QPixmap, QFileSystemModel, QIcon
 from utilities import GeneralUtilities
 import os
 
-
 class ProjectWizardPluginListModel(QAbstractListModel):
     def __init__(self, plugins, parent=None):
         super(ProjectWizardPluginListModel, self).__init__(parent)
@@ -21,8 +20,8 @@ class ProjectWizardPluginListModel(QAbstractListModel):
             if role == Qt.DisplayRole:
                 return QVariant(plugin.name)
             if role == Qt.DecorationRole:
-                for dir in GeneralUtilities.getPluginDirs():
-                    picturePath = os.path.join(dir, plugin.plugin_object.name, 'logo.png')
+                for directory in GeneralUtilities.getPluginDirs():
+                    picturePath = os.path.join(directory, plugin.plugin_object.name, 'logo.png')
                     if picturePath and os.path.exists(picturePath):
                         pixmap = QPixmap(picturePath)
                         return QIcon(pixmap.scaled(30, 30, Qt.IgnoreAspectRatio, Qt.FastTransformation))
@@ -31,7 +30,7 @@ class ProjectWizardPluginListModel(QAbstractListModel):
                 return QIcon(pixmap)
             if role == Qt.CheckStateRole:
                 if plugin:
-                    return (Qt.Checked if plugin.name in self.checkedPlugins else Qt.Unchecked)
+                    return Qt.Checked if plugin.name in self.checkedPlugins else Qt.Unchecked
                     
         else: 
             return QVariant()
@@ -49,4 +48,4 @@ class ProjectWizardPluginListModel(QAbstractListModel):
     def flags(self, index):
         if not index.isValid():
             return Qt.ItemIsEnabled
-        return Qt.ItemFlags(QAbstractListModel.flags(self, index)|Qt.ItemIsUserCheckable)
+        return Qt.ItemFlags(QAbstractListModel.flags(self, index) | Qt.ItemIsUserCheckable)

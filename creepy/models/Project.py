@@ -4,7 +4,7 @@ import shelve
 import os
 import logging
 from utilities import GeneralUtilities
-# set up logging
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(os.path.join(GeneralUtilities.getLogDir(), 'creepy_main.log'))
@@ -15,9 +15,9 @@ logger.addHandler(fh)
 
 
 class Project(object):
-    def __init__(self, projectType=None, projectName=None, selectedTargets=None, projectKeywords=None, projectDescription=None,
-                 enabledPlugins=None, dateCreated=None, locations=None, analysis=None, analysisDocument=None,
-                 dateEdited=None, results=None, viewSettings=None, poi=None):
+    def __init__(self, projectType=None, projectName=None, selectedTargets=None, projectKeywords=None,
+                 projectDescription=None, enabledPlugins=None, dateCreated=None, locations=None, analysis=None,
+                 analysisDocument=None,dateEdited=None, results=None, viewSettings=None, poi=None):
         self.projectType = projectType
         self.projectName = projectName
         self.selectedTargets = selectedTargets

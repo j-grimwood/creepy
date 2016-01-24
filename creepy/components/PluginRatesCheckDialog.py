@@ -3,6 +3,8 @@
 from PyQt4.QtGui import QDialog
 from PyQt4.QtCore  import Qt
 from ui.PluginRatesCheckDialog import Ui_checkPluginRatesDialog
+
+
 class PluginRatesCheckDialog(QDialog):
     """
     Loads the Plugin Rates Check Dialog that provides information regarding the API limits of the plugin

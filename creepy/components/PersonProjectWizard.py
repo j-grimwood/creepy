@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os
+
 from PyQt4.QtGui import QWizard, QMessageBox, QWidget, QScrollArea, QLineEdit, QLabel, QVBoxLayout, QCheckBox, \
     QGridLayout
 from PyQt4.QtCore import QString
@@ -26,6 +26,9 @@ class PersonProjectWizard(QWizard):
         self.ui.setupUi(self)
         self.selectedTargets = []
         self.enabledPlugins = []
+        self.ProjectWizardPossibleTargetsTable = None
+        self.PluginManager = None
+        self.SearchConfigPluginConfigurationListModel = None
         # Register the project name field so that it will become mandatory
         self.page(0).registerField('name*', self.ui.personProjectNameValue)
 
@@ -44,10 +47,11 @@ class PersonProjectWizard(QWizard):
         self.ui.personProjectSelectedTargetsTable.model().removeRows(toRemove, len(toRemove))
 
     def showWarning(self, title, text):
-        QMessageBox.warning(self, title, text)
+        QMessageBox.warning(self, title, text, None)
 
     def validateCurrentPage(self):
         """
+        Validates that when clicking Next at the Target Selection page, the user has already selected a target
         """
         if self.currentPage() == self.ui.personProjectWizardPage2:
             if not self.ProjectWizardSelectedTargetsTable.targets:
@@ -84,7 +88,7 @@ class PersonProjectWizard(QWizard):
                                          'targetUsername': target['targetUsername'],
                                          'targetUserid': target['targetUserid'],
                                          'targetFullname': target['targetFullname']
-            })
+                                         })
 
     def searchForTargets(self):
         """
@@ -119,9 +123,6 @@ class PersonProjectWizard(QWizard):
         pluginList = sorted(self.PluginManager.getAllPlugins(), key=lambda x: x.name)
         return [[plugin, 0] for plugin in pluginList]
 
-    def getNameForConfigurationOption(self, key):
-        pass
-
     def showPluginsSearchOptions(self):
         """
         Loads the search options of all the selected plugins and populates the relevant UI elements
@@ -149,9 +150,7 @@ class PersonProjectWizard(QWizard):
             vbox = QGridLayout()
             vbox.setObjectName(_fromUtf8('searchconfig_vbox_container_' + plugin.name))
             gridLayoutRowIndex = 0
-            '''
-            Load the String options first
-            '''
+            # Load the String options first
             pluginStringOptions = plugin.plugin_object.readConfiguration('search_string_options')[1]
             if pluginStringOptions:
                 for idx, item in enumerate(pluginStringOptions.keys()):
@@ -165,9 +164,7 @@ class PersonProjectWizard(QWizard):
                     value.setText(pluginStringOptions[item])
                     vbox.addWidget(value, idx, 1)
                     gridLayoutRowIndex = idx + 1
-            '''
-            Load the boolean options 
-            '''
+            # Load the boolean options
             pluginBooleanOptions = plugin.plugin_object.readConfiguration('search_boolean_options')[1]
             if pluginBooleanOptions:
                 for idx, item in enumerate(pluginBooleanOptions.keys()):
@@ -207,7 +204,8 @@ class PersonProjectWizard(QWizard):
 
     def readSearchConfiguration(self):
         """
-        Reads all the search configuration options for the enabled plugins and and returns a list of the enabled plugins and their options.
+        Reads all the search configuration options for the enabled plugins and and returns a list of the enabled plugins
+        and their options.
         """
         enabledPlugins = []
         pages = (self.ui.searchConfiguration.widget(i) for i in range(self.ui.searchConfiguration.count()))
@@ -225,6 +223,6 @@ class PersonProjectWizard(QWizard):
                         boolean_options[str(k.objectName().replace('searchconfig_boolean_label_', ''))] = str(
                             k.isChecked())
 
-            enabledPlugins.append(
-                {'pluginName': plugin_name, 'searchOptions': {'string': string_options, 'boolean': boolean_options}})
+                    enabledPlugins.append({'pluginName': plugin_name,
+                                           'searchOptions': {'string': string_options, 'boolean': boolean_options}})
         return enabledPlugins

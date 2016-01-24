@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os
 from PyQt4.QtGui import QWizard, QMessageBox, QWidget, QScrollArea, QLineEdit, QLabel, QVBoxLayout, QCheckBox, \
     QGridLayout
 from PyQt4.QtCore import QObject, pyqtSlot, QString
@@ -16,7 +15,6 @@ except AttributeError:
     _fromUtf8 = lambda s: s
 
 
-
 class PlaceProjectWizard(QWizard):
     """ Loads the Place Based Project Wizard from the ui and shows it """
 
@@ -26,15 +24,19 @@ class PlaceProjectWizard(QWizard):
         self.ui.setupUi(self)
         self.enabledPlugins = []
         self.selectedPlugins = []
+        self.PluginManager = None
+        self.SearchConfigPluginConfigurationListModel = None
         # Register the project name field so that it will become mandatory
         self.page(0).registerField('name*', self.ui.placeProjectNameValue)
         self.unit = 'km'
-        self.myPyObj = self.pyObj()
+        self.myPyObj = self.PyObj()
 
-    class pyObj(QObject):
-        def __init__(self, parent=None):
+    class PyObj(QObject):
+        def __init__(self):
             QObject.__init__(self)
             self.poi_marked = False
+            self.lat = None
+            self.lng = None
 
         @pyqtSlot(str)
         def setLatLng(self, latlng):
@@ -44,11 +46,9 @@ class PlaceProjectWizard(QWizard):
             self.lng = float(lng)
 
     def showWarning(self, title, text):
-        QMessageBox.warning(self, title, text)
+        QMessageBox.warning(self, title, text, None)
 
     def validateCurrentPage(self):
-        """
-        """
         if self.currentPage() == self.ui.placeProjectWizardPage2:
             if not self.myPyObj.poi_marked:
                 self.showWarning('No POI selected',
@@ -107,9 +107,7 @@ class PlaceProjectWizard(QWizard):
             vbox = QGridLayout()
             vbox.setObjectName(_fromUtf8('searchconfig_vbox_container_' + plugin.name))
             gridLayoutRowIndex = 0
-            '''
-            Load the String options first
-            '''
+            # Load the String options first
             pluginStringOptions = plugin.plugin_object.readConfiguration('search_string_options')[1]
             if pluginStringOptions:
                 for idx, item in enumerate(pluginStringOptions.keys()):
@@ -123,9 +121,7 @@ class PlaceProjectWizard(QWizard):
                     value.setText(pluginStringOptions[item])
                     vbox.addWidget(value, idx, 1)
                     gridLayoutRowIndex = idx + 1
-            '''
-            Load the boolean options 
-            '''
+            # Load the boolean options
             pluginBooleanOptions = plugin.plugin_object.readConfiguration('search_boolean_options')[1]
             if pluginBooleanOptions:
                 for idx, item in enumerate(pluginBooleanOptions.keys()):
@@ -165,7 +161,8 @@ class PlaceProjectWizard(QWizard):
 
     def readSearchConfiguration(self):
         """
-        Reads all the search configuration options for the enabled plugins and and returns a list of the enabled plugins and their options.
+        Reads all the search configuration options for the enabled plugins and and returns a list of the enabled plugins
+        and their options.
         """
         enabledPlugins = []
         pages = (self.ui.searchConfiguration.widget(i) for i in range(self.ui.searchConfiguration.count()))
@@ -183,6 +180,6 @@ class PlaceProjectWizard(QWizard):
                         boolean_options[str(k.objectName().replace('searchconfig_boolean_label_', ''))] = str(
                             k.isChecked())
 
-            enabledPlugins.append(
-                {'pluginName': plugin_name, 'searchOptions': {'string': string_options, 'boolean': boolean_options}})
+                    enabledPlugins.append({'pluginName': plugin_name,
+                                           'searchOptions': {'string': string_options, 'boolean': boolean_options}})
         return enabledPlugins
