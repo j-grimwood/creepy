@@ -40,7 +40,7 @@ def getProjectsDir():
     try:
         os.makedirs(directory)
     except OSError as e:
-        if e.errno == errno.EEXIST and os.path.isdir(dir):
+        if e.errno == errno.EEXIST and os.path.isdir(directory):
             pass
         else:
             raise
