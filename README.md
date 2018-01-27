@@ -1,6 +1,10 @@
 # creepy
 
+### This fork is meant to make Creepy compatible with py3, update twitter and others, to comply with recent API functionality changes.
+
+
 ### Current Version 
+
 1.4.1
 
 ### Author 
